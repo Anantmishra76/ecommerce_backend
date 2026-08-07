@@ -4,11 +4,12 @@ const { generateToken } = require("../utils/generateToken");
 
 module.exports.registeruser = async (req, res) => {
   try {
-    const { name, email, password } = req.body;
+    const { name, email, password, role } = req.body;
     const existingUser = await User.findOne({ email });
 
     if (existingUser) {
       return res.status(400).json({
+        success: false,
         message: "User already exists",
       });
     }
@@ -18,41 +19,72 @@ module.exports.registeruser = async (req, res) => {
     const newUser = await User.create({
       name,
       email,
+      role,
       password: hashedPassword,
     });
 
     const token = generateToken(newUser);
 
     return res.status(201).json({
+      success: true,
       message: "User registered successfully",
       token,
       user: {
         id: newUser._id,
         name: newUser.name,
         email: newUser.email,
+        role: newUser.role,
       },
     });
   } catch (err) {
     console.error(err);
     return res.status(500).json({
+      success: false,
       message: "Internal server error",
     });
   }
 };
 
 module.exports.loginuser = async (req, res) => {
-  let { email, password } = req.body;
-  let user = await User.findOne({ email: email });
-  if (!user) return res.send("User not found");
-  bcrypt.compare(password, user.password, (err, result) => {
-    if (result) {
-      const token = generateToken(user);
-      res.cookie("token", token);
-      res.send("logged in successfully");
-    } else {
-      return res.send("Invalid credentials");
+  try {
+    const { email, password } = req.body;
+    const user = await User.findOne({ email });
+
+    if (!user) {
+      return res.status(401).json({
+        success: false,
+        message: "invalid email or password",
+      });
     }
-  });
+
+    const isMatch = await bcrypt.compare(password, user.password);
+    if (!isMatch) {
+      return res.status(401).json({
+        success: false,
+        message: "Invalid credentials",
+      });
+    }
+
+    const token = generateToken(user);
+    res.cookie("token", token, { httpOnly: true });
+
+    return res.status(200).json({
+      success: true,
+      message: "Logged in successfully",
+      user: {
+        id: user._id,
+        name: user.name,
+        email: user.email,
+        role: user.role,
+      },
+    });
+  } catch (err) {
+    console.error(err);
+    return res.status(500).json({
+      success: false,
+      message: "Internal server error",
+    });
+  }
 };
 
 module.exports.Logoutuser = (req, res) => {
