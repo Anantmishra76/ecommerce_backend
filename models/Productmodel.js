@@ -22,6 +22,13 @@ const ProductSchema = new mongoose.Schema(
     discountPrice: {
       type: Number,
       default: 0,
+      min: 0,
+      validate: {
+        validator: function (value) {
+          return value < this.price;
+        },
+        message: "Discount price must be less than the original price",
+      },
     },
 
     category: {
@@ -34,7 +41,7 @@ const ProductSchema = new mongoose.Schema(
       ref: "Subcategory",
     },
 
-    isfeatured: {
+    isFeatured: {
       type: Boolean,
       default: false,
     },

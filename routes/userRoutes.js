@@ -1,8 +1,8 @@
 const express = require("express");
 const router = express.Router();
-const isloggedin = require("../middlewares/isloggedin");
+const isLoggedIn = require("../middlewares/isLoggedIn");
 
-router.get("/profile", isloggedin, (req, res) => {
+router.get("/profile", isLoggedIn, (req, res) => {
   res.json({
     message: "Welcome user",
     success: true,

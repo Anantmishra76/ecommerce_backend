@@ -8,6 +8,8 @@ const PORT = 3000;
 const authRouter = require("./routes/authRoutes");
 const userRouter = require("./routes/userRoutes");
 const adminRouter = require("./routes/adminRoutes");
+const productRouter = require("./routes/productRoutes");
+const categoryRouter = require("./routes/categoryRoutes");
 
 app.use(express.json());
 app.use(cookieParser());
@@ -18,6 +20,7 @@ const Product = require("./models/Productmodel");
 const Category = require("./models/categoryModel");
 const SubCategory = require("./models/SubcategoryModel");
 
+// for database connection
 connectDB();
 
 app.get("/", (req, res) => {
@@ -27,6 +30,9 @@ app.get("/", (req, res) => {
 app.use("/api/v1/auth", authRouter);
 app.use("/api/v1/users", userRouter);
 app.use("/api/v1/admin", adminRouter);
+app.use("/api/v1/admin/categories", categoryRouter);
+
+app.use("/api/v1/admin/products", productRouter);
 
 app.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}`);

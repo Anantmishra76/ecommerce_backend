@@ -1,14 +1,11 @@
 const express = require("express");
 const router = express.Router();
+const { createCategory } = require("../controllers/categoryController");
+
 const isLoggedIn = require("../middlewares/isLoggedIn");
 const isAdmin = require("../middlewares/isAdmin");
 
-router.get("/", isLoggedIn, isAdmin, (req, res) => {
-  res.json({
-    success: true,
-    message: "Welcome admin",
-    user: req.user,
-  });
-});
+// Admin Only
+router.post("/", isLoggedIn, isAdmin, createCategory);
 
 module.exports = router;
