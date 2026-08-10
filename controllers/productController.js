@@ -1,5 +1,6 @@
 const Product = require("../models/Productmodel");
 
+
 module.exports.createProduct = async (req, res) => {
   try {
     const {

@@ -10,6 +10,7 @@ const userRouter = require("./routes/userRoutes");
 const adminRouter = require("./routes/adminRoutes");
 const productRouter = require("./routes/productRoutes");
 const categoryRouter = require("./routes/categoryRoutes");
+const subCategoryRouter = require("./routes/subCategoryRoute");
 
 app.use(express.json());
 app.use(cookieParser());
@@ -31,6 +32,7 @@ app.use("/api/v1/auth", authRouter);
 app.use("/api/v1/users", userRouter);
 app.use("/api/v1/admin", adminRouter);
 app.use("/api/v1/categories", categoryRouter);
+app.use("/api/v1/subcategories", subCategoryRouter);
 
 app.use("/api/v1/admin/products", productRouter);
 

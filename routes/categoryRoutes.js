@@ -11,7 +11,7 @@ const {
 const isLoggedIn = require("../middlewares/isLoggedIn");
 const isAdmin = require("../middlewares/isAdmin");
 
-// Public  
+// Public
 router.get("/", getAllCategories);
 router.get("/:id", getCategoryByID);
 
@@ -21,3 +21,4 @@ router.put("/update/:id", isLoggedIn, isAdmin, updateCategory);
 router.delete("/delete/:id", isLoggedIn, isAdmin, deleteCategory);
 
 module.exports = router;
+  
