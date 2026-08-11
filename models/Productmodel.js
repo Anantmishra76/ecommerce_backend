@@ -13,13 +13,13 @@ const ProductSchema = new mongoose.Schema(
       required: true,
     },
 
-    price: {
+    price: { 
       type: Number,
       required: true,
       min: 0,
     },
-
-    discountPrice: {
+    // actual selling price after discount on the product
+    discountedPrice: {
       type: Number,
       default: 0,
       min: 0,
@@ -31,14 +31,14 @@ const ProductSchema = new mongoose.Schema(
       },
     },
 
-    category: {
+    Category: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "Category",
       required: true,
     },
-    subcategory: {
+    SubCategory: {
       type: mongoose.Schema.Types.ObjectId,
-      ref: "Subcategory",
+      ref: "SubCategory",
     },
 
     isFeatured: {

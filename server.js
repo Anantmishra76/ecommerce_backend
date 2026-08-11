@@ -3,7 +3,7 @@ const express = require("express");
 const cookieParser = require("cookie-parser");
 const connectDB = require("./config/mongoose-connection");
 const app = express();
-const PORT = 3000;
+const PORT = process.env.PORT || 3000;
 
 const authRouter = require("./routes/authRoutes");
 const userRouter = require("./routes/userRoutes");
@@ -14,12 +14,6 @@ const subCategoryRouter = require("./routes/subCategoryRoute");
 
 app.use(express.json());
 app.use(cookieParser());
-
-// model
-const User = require("./models/usermodel");
-const Product = require("./models/Productmodel");
-const Category = require("./models/categoryModel");
-const SubCategory = require("./models/SubcategoryModel");
 
 // for database connection
 connectDB();
@@ -33,8 +27,7 @@ app.use("/api/v1/users", userRouter);
 app.use("/api/v1/admin", adminRouter);
 app.use("/api/v1/categories", categoryRouter);
 app.use("/api/v1/subcategories", subCategoryRouter);
-
-app.use("/api/v1/admin/products", productRouter);
+app.use("/api/v1/products", productRouter);
 
 app.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}`);

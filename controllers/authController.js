@@ -1,11 +1,21 @@
 const User = require("../models/usermodel");
 const bcrypt = require("bcryptjs");
 const { generateToken } = require("../utils/generateToken");
+const cookieOptions = require("../utils/cookieOptions");
 
 module.exports.registeruser = async (req, res) => {
   try {
-    const { name, email, password, role } = req.body;
-    const existingUser = await User.findOne({ email });
+    const { name, email, password } = req.body;
+
+    if (!name || !email || !password) {
+      return res.status(400).json({
+        success: false,
+        message: "Name, email, and password are required",
+      });
+    }
+
+    const normalizedEmail = email.trim().toLowerCase();
+    const existingUser = await User.findOne({ email: normalizedEmail });
 
     if (existingUser) {
       return res.status(400).json({
@@ -17,18 +27,18 @@ module.exports.registeruser = async (req, res) => {
     const hashedPassword = await bcrypt.hash(password, salt);
 
     const newUser = await User.create({
-      name,
-      email,
-      role,
+      name: name.trim(),
+      email: normalizedEmail,
+      role: "user",
       password: hashedPassword,
     });
 
     const token = generateToken(newUser);
+    res.cookie("token", token, cookieOptions);
 
     return res.status(201).json({
       success: true,
       message: "User registered successfully",
-      token,
       user: {
         id: newUser._id,
         name: newUser.name,
@@ -37,6 +47,20 @@ module.exports.registeruser = async (req, res) => {
       },
     });
   } catch (err) {
+    if (err.name === "ValidationError") {
+      return res.status(400).json({
+        success: false,
+        message: err.message,
+      });
+    }
+
+    if (err.code === 11000) {
+      return res.status(400).json({
+        success: false,
+        message: "User already exists",
+      });
+    }
+
     console.error(err);
     return res.status(500).json({
       success: false,
@@ -48,7 +72,15 @@ module.exports.registeruser = async (req, res) => {
 module.exports.loginuser = async (req, res) => {
   try {
     const { email, password } = req.body;
-    const user = await User.findOne({ email });
+
+    if (!email || !password) {
+      return res.status(400).json({
+        success: false,
+        message: "Email and password are required",
+      });
+    }
+
+    const user = await User.findOne({ email: email.trim().toLowerCase() });
 
     if (!user) {
       return res.status(401).json({
@@ -66,7 +98,7 @@ module.exports.loginuser = async (req, res) => {
     }
 
     const token = generateToken(user);
-    res.cookie("token", token, { httpOnly: true });
+    res.cookie("token", token, cookieOptions);
 
     return res.status(200).json({
       success: true,
@@ -88,7 +120,7 @@ module.exports.loginuser = async (req, res) => {
 };
 
 module.exports.Logoutuser = (req, res) => {
-  res.clearCookie("token");
+  res.clearCookie("token", cookieOptions);
   res.status(200).json({
     success: true,
     message: "Logged out successfully",

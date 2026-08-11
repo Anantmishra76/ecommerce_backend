@@ -1,4 +1,5 @@
 const Category = require("../models/categoryModel");
+const isValidObjectId = require("../utils/isValidObjectId");
 
 module.exports.getAllCategories = async (req, res) => {
   try {
@@ -20,6 +21,14 @@ module.exports.getAllCategories = async (req, res) => {
 module.exports.getCategoryByID = async (req, res) => {
   try {
     const { id } = req.params;
+
+    if (!isValidObjectId(id)) {
+      return res.status(400).json({
+        success: false,
+        message: "Invalid category ID",
+      });
+    }
+
     const category = await Category.findById(id);
     if (!category) {
       return res.status(404).json({
@@ -77,6 +86,20 @@ module.exports.createCategory = async (req, res) => {
       category,
     });
   } catch (error) {
+    if (error.name === "ValidationError") {
+      return res.status(400).json({
+        success: false,
+        message: error.message,
+      });
+    }
+
+    if (error.code === 11000) {
+      return res.status(400).json({
+        success: false,
+        message: "Category already exists",
+      });
+    }
+
     console.error(error);
 
     return res.status(500).json({
@@ -90,6 +113,13 @@ module.exports.updateCategory = async (req, res) => {
   try {
     const { id } = req.params;
     const { name, description, image, isActive } = req.body;
+
+    if (!isValidObjectId(id)) {
+      return res.status(400).json({
+        success: false,
+        message: "Invalid category ID",
+      });
+    }
 
     const category = await Category.findById(id);
 
@@ -135,6 +165,20 @@ module.exports.updateCategory = async (req, res) => {
       category,
     });
   } catch (err) {
+    if (err.name === "ValidationError") {
+      return res.status(400).json({
+        success: false,
+        message: err.message,
+      });
+    }
+
+    if (err.code === 11000) {
+      return res.status(400).json({
+        success: false,
+        message: "Category already exists",
+      });
+    }
+
     console.log(err);
 
     return res.status(500).json({
@@ -149,11 +193,18 @@ module.exports.deleteCategory = async (req, res) => {
   try {
     const { id } = req.params;
 
+    if (!isValidObjectId(id)) {
+      return res.status(400).json({
+        success: false,
+        message: "Invalid category ID",
+      });
+    }
+
     const category = await Category.findById(id);
     if (!category) {
       return res.status(404).json({
         success: false,
-        message: "category already exists",
+        message: "Category not found",
       });
     }
     await Category.findByIdAndDelete(id);

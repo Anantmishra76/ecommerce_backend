@@ -1,5 +1,7 @@
 const SubCategory = require("../models/SubcategoryModel");
 const Category = require("../models/categoryModel");
+const isValidObjectId = require("../utils/isValidObjectId");
+
 
 module.exports.getAllSubcategories = async (req, res) => {
   try {
@@ -24,6 +26,14 @@ module.exports.getAllSubcategories = async (req, res) => {
 module.exports.getSubcategoryByID = async (req, res) => {
   try {
     const { id } = req.params;
+
+    if (!isValidObjectId(id)) {
+      return res.status(400).json({
+        success: false,
+        message: "Invalid subcategory ID",
+      });
+    }
+
     const subcategory = await SubCategory.findById(id).populate(
       "category",
       "name description image isActive",
@@ -40,6 +50,20 @@ module.exports.getSubcategoryByID = async (req, res) => {
       subcategory,
     });
   } catch (err) {
+    if (err.name === "ValidationError") {
+      return res.status(400).json({
+        success: false,
+        message: err.message,
+      });
+    }
+
+    if (err.code === 11000) {
+      return res.status(400).json({
+        success: false,
+        message: "Subcategory already exists in this category",
+      });
+    }
+
     console.log(err);
     return res.status(500).json({
       success: false,
@@ -56,6 +80,13 @@ module.exports.createSubcategory = async (req, res) => {
       return res.status(400).json({
         success: false,
         message: "Subcategory name and category is required",
+      });
+    }
+
+    if (!isValidObjectId(category)) {
+      return res.status(400).json({
+        success: false,
+        message: "Invalid category ID",
       });
     }
 
@@ -91,6 +122,20 @@ module.exports.createSubcategory = async (req, res) => {
       subcategory,
     });
   } catch (err) {
+    if (err.name === "ValidationError") {
+      return res.status(400).json({
+        success: false,
+        message: err.message,
+      });
+    }
+
+    if (err.code === 11000) {
+      return res.status(400).json({
+        success: false,
+        message: "Subcategory already exists in this category",
+      });
+    }
+
     console.log(err);
     return res.status(500).json({
       success: false,
@@ -104,6 +149,13 @@ module.exports.updateSubcategory = async (req, res) => {
     const { id } = req.params;
     const { name, category, description, image, isActive } = req.body;
 
+    if (!isValidObjectId(id)) {
+      return res.status(400).json({
+        success: false,
+        message: "Invalid subcategory ID",
+      });
+    }
+
     const subcategory = await SubCategory.findById(id);
 
     if (!subcategory) {
@@ -114,6 +166,13 @@ module.exports.updateSubcategory = async (req, res) => {
     }
 
     if (category !== undefined) {
+      if (!isValidObjectId(category)) {
+        return res.status(400).json({
+          success: false,
+          message: "Invalid category ID",
+        });
+      }
+
       const existingCategory = await Category.findById(category);
       if (!existingCategory) {
         return res.status(404).json({
@@ -170,6 +229,13 @@ module.exports.updateSubcategory = async (req, res) => {
 module.exports.deleteSubcategory = async (req, res) => {
   try {
     const { id } = req.params;
+
+    if (!isValidObjectId(id)) {
+      return res.status(400).json({
+        success: false,
+        message: "Invalid subcategory ID",
+      });
+    }
 
     const subcategory = await SubCategory.findById(id);
     if (!subcategory) {
