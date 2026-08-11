@@ -33,9 +33,6 @@ module.exports.registeruser = async (req, res) => {
       password: hashedPassword,
     });
 
-    const token = generateToken(newUser);
-    res.cookie("token", token, cookieOptions);
-
     return res.status(201).json({
       success: true,
       message: "User registered successfully",
