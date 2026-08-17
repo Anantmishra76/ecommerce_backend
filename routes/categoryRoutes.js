@@ -21,4 +21,3 @@ router.put("/update/:id", isLoggedIn, isAdmin, updateCategory);
 router.delete("/delete/:id", isLoggedIn, isAdmin, deleteCategory);
 
 module.exports = router;
-  
