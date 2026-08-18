@@ -10,3 +10,5 @@ const {
 router.get("/", isLoggedIn, getWishlist);
 router.post("/add/:productId", isLoggedIn, addToWishlist);
 router.delete("/remove/:productId", isLoggedIn, removefromWishlist);
+
+module.exports = router;

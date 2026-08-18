@@ -7,7 +7,7 @@ const {
   updateCart,
   removeFromCart,
 } = require("../controllers/cartController");
-const isLoggedIn = require("../middlewares/isloggedin");
+const isLoggedIn = require("../middlewares/isLoggedIn");
 
 router.get("/", isLoggedIn, fetchCart);
 router.post("/add", isLoggedIn, addToCart);

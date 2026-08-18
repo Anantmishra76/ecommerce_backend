@@ -12,6 +12,8 @@ const productRouter = require("./routes/productRoutes");
 const categoryRouter = require("./routes/categoryRoutes");
 const subCategoryRouter = require("./routes/subCategoryRoute");
 const cartRoutes = require("./routes/cartRoutes");
+const WishlistRoute = require("./routes/WishlistRoute");
+const orderRoutes = require("./routes/orderRoutes");
 
 app.use(express.json());
 app.use(cookieParser());
@@ -30,6 +32,8 @@ app.use("/api/v1/categories", categoryRouter);
 app.use("/api/v1/subcategories", subCategoryRouter);
 app.use("/api/v1/products", productRouter);
 app.use("/api/v1/cart", cartRoutes);
+app.use("/api/v1/wishlist", WishlistRoute);
+app.use("/api/v1/orders", orderRoutes);
 
 app.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}`);
