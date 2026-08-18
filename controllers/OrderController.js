@@ -213,7 +213,7 @@ module.exports.cancelOrder = async (req, res) => {
 module.exports.updateOrderStatus = async (req, res) => {
   try {
     const orderId = req.params.id;
-    const { orderStatus } = req.body;
+    const { orderStatus } = req.body || {};
     const validStatuses = ["PROCESSING", "SHIPPED", "DELIVERED", "CANCELLED"];
     if (!validStatuses.includes(orderStatus)) {
       return res.status(400).json({
